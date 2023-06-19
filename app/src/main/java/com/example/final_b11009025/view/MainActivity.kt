@@ -1,7 +1,11 @@
 package com.example.final_b11009025.view
 
 import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -72,22 +76,34 @@ class MainActivity : AppCompatActivity() {
 
     private fun onClickRequestPermission() {
         when {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                     == PackageManager.PERMISSION_GRANTED -> {
                 // 同意
-                Toast.makeText(this, "已取得相機權限", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "已取得通知權限", Toast.LENGTH_SHORT).show()
+                val channel = NotificationChannel("Day15", "Day15", NotificationManager.IMPORTANCE_HIGH)
+                val builder = Notification.Builder(this, "Day15")
+                builder.setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                    .setContentTitle("Day15")
+                    .setContentText("Day15 Challenge")
+                    .setLargeIcon(BitmapFactory.decodeResource(resources,R.mipmap.ic_launcher))
+                    .setAutoCancel(true)
+                val notification : Notification = builder.build()
+                val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                manager.createNotificationChannel(channel)
+                manager.notify(0, notification)
+
             }
 
             ActivityCompat.shouldShowRequestPermissionRationale(
                 this,
-                Manifest.permission.CAMERA
+                Manifest.permission.POST_NOTIFICATIONS
             ) -> {
                 //拒絕
-                Toast.makeText(this, "未取得相機權限，如要更改，請至設定開啟權限", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "未取得通知權限，可至設定開啟權限", Toast.LENGTH_SHORT).show()
             }
             else -> {
                 // 第一次請求權限，直接詢問
-                requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }
@@ -95,9 +111,10 @@ class MainActivity : AppCompatActivity() {
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
     { isGranted: Boolean ->
         if (isGranted) {
-            Toast.makeText(this, "已取得相機權限", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "已取得通知權限", Toast.LENGTH_SHORT).show()
+
         } else {
-            Toast.makeText(this, "未取得相機權限", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "未取得通知權限", Toast.LENGTH_SHORT).show()
         }
     }
 
